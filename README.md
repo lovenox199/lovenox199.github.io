@@ -1,2 +1,1 @@
-# sudoku
-sudoku
+# lovenox199.github.io
