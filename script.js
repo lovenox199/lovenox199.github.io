@@ -1,17 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // DOM Elements - using const for better readability and safety
+    // DOM Elements
     const boardElement = document.getElementById('sudoku-board');
     const messageArea = document.getElementById('message-area');
     const checkButton = document.getElementById('check-button');
     const newGameButton = document.getElementById('new-game-button');
     
-    // Game state - with clear variable names and organization
+    // Create difficulty buttons
+    const difficultyContainer = document.createElement('div');
+    difficultyContainer.className = 'difficulty-container';
+    difficultyContainer.innerHTML = `
+        <button id="easy-button" class="difficulty-button">Easy</button>
+        <button id="medium-button" class="difficulty-button active">Medium</button>
+        <button id="hard-button" class="difficulty-button">Hard</button>
+    `;
+    
+    // Insert difficulty container before the board
+    boardElement.parentNode.insertBefore(difficultyContainer, boardElement);
+    
+    // Get difficulty buttons
+    const easyButton = document.getElementById('easy-button');
+    const mediumButton = document.getElementById('medium-button');
+    const hardButton = document.getElementById('hard-button');
+    
+    // Constants
     const BOARD_SIZE = 9;
     const SUBGRID_SIZE = 3;
     const DIFFICULTY_LEVELS = {
-        easy: 30,
-        medium: 45,
-        hard: 55
+        easy: 30,    // 30 empty cells
+        medium: 45,  // 45 empty cells
+        hard: 55     // 55 empty cells
     };
     
     // Game state
@@ -21,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentBoard: [], // The user's current progress
         selectedCell: null,
         difficulty: DIFFICULTY_LEVELS.medium, // Default difficulty
+        currentDifficulty: 'medium', // Keep track of active difficulty
         gameComplete: false
     };
 
@@ -155,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {Object} - Object containing initialBoard and solutionBoard
      */
     function generateSudoku() {
-        console.log("Generating new Sudoku...");
+        console.log(`Generating new Sudoku... (Difficulty: ${gameState.currentDifficulty})`);
         
         // 1. Create an empty board
         const board = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0));
@@ -177,6 +195,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
+     * Update the active difficulty button
+     * @param {string} difficulty - The selected difficulty
+     */
+    function updateDifficultyUI(difficulty) {
+        // Remove active class from all buttons
+        easyButton.classList.remove('active');
+        mediumButton.classList.remove('active');
+        hardButton.classList.remove('active');
+        
+        // Add active class to selected button
+        switch (difficulty) {
+            case 'easy':
+                easyButton.classList.add('active');
+                break;
+            case 'medium':
+                mediumButton.classList.add('active');
+                break;
+            case 'hard':
+                hardButton.classList.add('active');
+                break;
+        }
+    }
+
+    /**
+     * Set the game difficulty
+     * @param {string} difficulty - The difficulty level ('easy', 'medium', 'hard')
+     */
+    function setDifficulty(difficulty) {
+        gameState.difficulty = DIFFICULTY_LEVELS[difficulty];
+        gameState.currentDifficulty = difficulty;
+        updateDifficultyUI(difficulty);
+        
+        // Update the message to reflect the difficulty change
+        showMessage(`Difficulty set to ${difficulty}. Press New Game to start.`, 'info');
+    }
+
+    /**
      * Initialize a new game
      */
     function initGame() {
@@ -192,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameState.gameComplete = false;
         
         // Update UI
-        messageArea.textContent = '';
+        showMessage(`New ${gameState.currentDifficulty} game started!`, 'info');
         renderBoard();
         console.log("New game started!");
     }
@@ -403,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (!isCorrect) {
             showMessage('Something is wrong... Keep trying!', 'error');
         } else {
-            showMessage('Congratulations! You solved it!', 'success');
+            showMessage(`Congratulations! You solved the ${gameState.currentDifficulty} puzzle!`, 'success');
             
             // Mark game as complete
             gameState.gameComplete = true;
@@ -431,6 +486,59 @@ document.addEventListener('DOMContentLoaded', () => {
      * Start a new game
      */
     newGameButton.addEventListener('click', initGame);
+
+    /**
+     * Set difficulty to easy
+     */
+    easyButton.addEventListener('click', () => {
+        setDifficulty('easy');
+    });
+
+    /**
+     * Set difficulty to medium
+     */
+    mediumButton.addEventListener('click', () => {
+        setDifficulty('medium');
+    });
+
+    /**
+     * Set difficulty to hard
+     */
+    hardButton.addEventListener('click', () => {
+        setDifficulty('hard');
+    });
+
+    // Add some basic CSS for the difficulty buttons
+    const style = document.createElement('style');
+    style.textContent = `
+        .difficulty-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .difficulty-button {
+            padding: 8px 16px;
+            margin: 0 5px;
+            border: 1px solid #ccc;
+            background-color: #f5f5f5;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-button:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .difficulty-button.active {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+    `;
+    document.head.appendChild(style);
 
     // --- Initialize the first game on load ---
     initGame();
