@@ -1,71 +1,106 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // DOM Elements - using const for better readability and safety
     const boardElement = document.getElementById('sudoku-board');
     const messageArea = document.getElementById('message-area');
     const checkButton = document.getElementById('check-button');
     const newGameButton = document.getElementById('new-game-button');
+    
+    // Game state - with clear variable names and organization
+    const BOARD_SIZE = 9;
+    const SUBGRID_SIZE = 3;
+    const DIFFICULTY_LEVELS = {
+        easy: 30,
+        medium: 45,
+        hard: 55
+    };
+    
+    // Game state
+    let gameState = {
+        initialBoard: [], // The puzzle board shown to the user
+        solutionBoard: [], // The complete solution (generated internally)
+        currentBoard: [], // The user's current progress
+        selectedCell: null,
+        difficulty: DIFFICULTY_LEVELS.medium, // Default difficulty
+        gameComplete: false
+    };
 
-    let initialBoard = []; // The puzzle board shown to the user
-    let solutionBoard = []; // The complete solution (generated internally)
-    let currentBoard = []; // The user's current progress
-    let selectedCell = null;
-    // --- Difficulty ---
-    // Adjust the number of empty cells for difficulty (e.g., 30=Easy, 40=Medium, 50=Hard)
-    let difficulty = 45; // Number of cells to make empty (approx)
-
-    // --- Fisher-Yates Shuffle (for randomization) ---
+    /**
+     * Fisher-Yates Shuffle for randomization
+     * @param {Array} array - The array to shuffle
+     * @returns {Array} - The shuffled array
+     */
     function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
+        const arrayCopy = [...array]; // Create a copy to avoid mutating the original
+        for (let i = arrayCopy.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+            [arrayCopy[i], arrayCopy[j]] = [arrayCopy[j], arrayCopy[i]]; // Swap elements
         }
+        return arrayCopy;
     }
 
-    // --- Find next empty cell (row-major order) ---
+    /**
+     * Find next empty cell in row-major order
+     * @param {Array<Array<number>>} board - The Sudoku board
+     * @returns {Array<number>|null} - [row, col] of empty cell or null if none
+     */
     function findEmpty(board) {
-        for (let r = 0; r < 9; r++) {
-            for (let c = 0; c < 9; c++) {
-                if (board[r][c] === 0) {
-                    return [r, c];
+        for (let row = 0; row < BOARD_SIZE; row++) {
+            for (let col = 0; col < BOARD_SIZE; col++) {
+                if (board[row][col] === 0) {
+                    return [row, col];
                 }
             }
         }
         return null; // No empty cells
     }
 
-    // --- Check if a number is valid in a given position ---
-    // (Same as before, just ensure it's accessible globally within the script)
+    /**
+     * Check if a number is valid in a given position
+     * @param {Array<Array<number>>} board - The Sudoku board
+     * @param {number} row - Row index
+     * @param {number} col - Column index
+     * @param {number} num - Number to check
+     * @returns {boolean} - Whether the number is valid
+     */
     function isValid(board, row, col, num) {
         // Check Row
-        for (let c = 0; c < 9; c++) {
+        for (let c = 0; c < BOARD_SIZE; c++) {
             if (board[row][c] === num && c !== col) return false;
         }
+        
         // Check Column
-        for (let r = 0; r < 9; r++) {
+        for (let r = 0; r < BOARD_SIZE; r++) {
             if (board[r][col] === num && r !== row) return false;
         }
+        
         // Check 3x3 Subgrid
-        const startRow = Math.floor(row / 3) * 3;
-        const startCol = Math.floor(col / 3) * 3;
-        for (let r = startRow; r < startRow + 3; r++) {
-            for (let c = startCol; c < startCol + 3; c++) {
+        const startRow = Math.floor(row / SUBGRID_SIZE) * SUBGRID_SIZE;
+        const startCol = Math.floor(col / SUBGRID_SIZE) * SUBGRID_SIZE;
+        
+        for (let r = startRow; r < startRow + SUBGRID_SIZE; r++) {
+            for (let c = startCol; c < startCol + SUBGRID_SIZE; c++) {
                 if (board[r][c] === num && (r !== row || c !== col)) return false;
             }
         }
+        
         return true; // Number is valid
     }
 
-    // --- Sudoku Solver/Generator (Backtracking) ---
+    /**
+     * Solve the Sudoku board using backtracking
+     * @param {Array<Array<number>>} board - The Sudoku board to solve
+     * @returns {boolean} - Whether the board was solved
+     */
     function solveBoard(board) {
         const emptySpot = findEmpty(board);
         if (!emptySpot) {
             return true; // Board is full (solved)
         }
+        
         const [row, col] = emptySpot;
+        const numbers = shuffleArray([1, 2, 3, 4, 5, 6, 7, 8, 9]); // Randomize number order
 
-        const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        shuffleArray(numbers); // Randomize number order
-
-        for (let num of numbers) {
+        for (const num of numbers) {
             if (isValid(board, row, col, num)) {
                 board[row][col] = num; // Try the number
 
@@ -80,207 +115,323 @@ document.addEventListener('DOMContentLoaded', () => {
         return false; // Trigger backtracking
     }
 
-    // --- Create Puzzle by Removing Numbers ---
+    /**
+     * Create a puzzle by removing numbers from a solved board
+     * @param {Array<Array<number>>} board - The solved board
+     * @param {number} emptyCellsCount - Number of cells to empty
+     * @returns {Array<Array<number>>} - The puzzle with empty cells
+     */
     function createPuzzle(board, emptyCellsCount) {
-        let attempts = emptyCellsCount;
-        const puzzle = board.map(row => [...row]); // Start with the full solution
-
+        // Create a deep copy of the board
+        const puzzle = board.map(row => [...row]);
+        
         // Get all cell coordinates
         let cells = [];
-        for (let r = 0; r < 9; r++) {
-            for (let c = 0; c < 9; c++) {
+        for (let r = 0; r < BOARD_SIZE; r++) {
+            for (let c = 0; c < BOARD_SIZE; c++) {
                 cells.push([r, c]);
             }
         }
-        shuffleArray(cells); // Shuffle the cell order
+        
+        // Shuffle cells for random removal
+        cells = shuffleArray(cells);
 
+        // Remove numbers to create the puzzle
         let removedCount = 0;
-        for (let i = 0; i < cells.length && removedCount < attempts; i++) {
-             const [r, c] = cells[i];
-
-             if (puzzle[r][c] !== 0) {
-                 puzzle[r][c] = 0; // Remove the number
-                 removedCount++;
-                 // Note: A more robust generator would check if the puzzle still has a unique solution here.
-                 // This basic version just removes numbers randomly, which might lead to multiple solutions.
-             }
+        for (let i = 0; i < cells.length && removedCount < emptyCellsCount; i++) {
+            const [r, c] = cells[i];
+            const temp = puzzle[r][c];
+            puzzle[r][c] = 0; // Remove the number
+            
+            // TODO: For a more robust generator, check if the puzzle still has a unique solution
+            removedCount++;
         }
+        
         return puzzle;
     }
 
-    // --- Generate a New Sudoku ---
+    /**
+     * Generate a new Sudoku puzzle
+     * @returns {Object} - Object containing initialBoard and solutionBoard
+     */
     function generateSudoku() {
         console.log("Generating new Sudoku...");
+        
         // 1. Create an empty board
-        let board = Array(9).fill(null).map(() => Array(9).fill(0));
+        const board = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0));
 
         // 2. Fill the board completely using the backtracking solver
         if (!solveBoard(board)) {
             console.error("Failed to generate a full Sudoku solution!");
-            return null; // Should ideally not happen with an empty board start
+            return null;
         }
-        solutionBoard = board.map(row => [...row]); // Store the complete solution
-
-        // 3. Create the puzzle by removing numbers
-        initialBoard = createPuzzle(board, difficulty);
-        currentBoard = initialBoard.map(row => [...row]); // Set the starting state for the player
-
+        
+        // 3. Store the complete solution
+        const solutionBoard = board.map(row => [...row]);
+        
+        // 4. Create the puzzle by removing numbers
+        const initialBoard = createPuzzle(board, gameState.difficulty);
+        
         console.log("New puzzle generated.");
+        return { initialBoard, solutionBoard };
     }
 
-
-    // --- Game Initialization ---
+    /**
+     * Initialize a new game
+     */
     function initGame() {
-        generateSudoku(); // Generate the boards
-        if (!initialBoard) return; // Exit if generation failed
-
-        selectedCell = null;
+        // Generate the boards
+        const result = generateSudoku();
+        if (!result) return; // Exit if generation failed
+        
+        // Update game state
+        gameState.initialBoard = result.initialBoard;
+        gameState.solutionBoard = result.solutionBoard;
+        gameState.currentBoard = gameState.initialBoard.map(row => [...row]);
+        gameState.selectedCell = null;
+        gameState.gameComplete = false;
+        
+        // Update UI
         messageArea.textContent = '';
-        createBoardHTML(); // Create the visual representation
+        renderBoard();
         console.log("New game started!");
     }
 
-    // --- Create HTML Board ---
-    // Renamed from createBoard to avoid conflict with internal board arrays
-    function createBoardHTML() {
+    /**
+     * Render the Sudoku board in HTML
+     */
+    function renderBoard() {
         boardElement.innerHTML = ''; // Clear previous board
 
-        for (let r = 0; r < 9; r++) {
-            for (let c = 0; c < 9; c++) {
+        for (let row = 0; row < BOARD_SIZE; row++) {
+            for (let col = 0; col < BOARD_SIZE; col++) {
                 const cell = document.createElement('div');
                 cell.classList.add('cell');
-                cell.dataset.row = r;
-                cell.dataset.col = c;
+                cell.dataset.row = row;
+                cell.dataset.col = col;
 
-                const value = initialBoard[r][c]; // Use the generated puzzle board
-                if (value !== 0) {
-                    cell.textContent = value;
+                const initialValue = gameState.initialBoard[row][col];
+                const currentValue = gameState.currentBoard[row][col];
+                
+                if (initialValue !== 0) {
+                    // Pre-filled cell (part of the puzzle)
+                    cell.textContent = initialValue;
                     cell.classList.add('prefilled');
                 } else {
-                    // Display numbers from currentBoard if they exist (e.g., after a mistake and reset)
-                    if(currentBoard[r][c] !== 0) {
-                        cell.textContent = currentBoard[r][c];
+                    // Editable cell
+                    if (currentValue !== 0) {
+                        cell.textContent = currentValue;
                     }
+                    
                     cell.classList.add('editable');
-                    cell.addEventListener('click', () => handleCellClick(cell, r, c));
+                    
+                    // Only add event listeners if game is not complete
+                    if (!gameState.gameComplete) {
+                        cell.addEventListener('click', () => handleCellClick(cell, row, col));
+                    }
                 }
 
-                // Add thicker grid lines
-                if ((c + 1) % 3 === 0 && c < 8) cell.classList.add('thick-border-right');
-                if ((r + 1) % 3 === 0 && r < 8) cell.classList.add('thick-border-bottom');
+                // Add thicker grid lines for better visual separation
+                if ((col + 1) % SUBGRID_SIZE === 0 && col < BOARD_SIZE - 1) {
+                    cell.classList.add('thick-border-right');
+                }
+                
+                if ((row + 1) % SUBGRID_SIZE === 0 && row < BOARD_SIZE - 1) {
+                    cell.classList.add('thick-border-bottom');
+                }
 
                 boardElement.appendChild(cell);
             }
         }
     }
 
-    // --- Handle Cell Selection ---
-    // (Same as before)
+    /**
+     * Handle cell selection
+     * @param {HTMLElement} cell - The selected cell
+     * @param {number} row - Row index
+     * @param {number} col - Column index
+     */
     function handleCellClick(cell, row, col) {
-        if (selectedCell) selectedCell.classList.remove('selected');
-        selectedCell = cell;
-        selectedCell.classList.add('selected');
+        // Remove selection from previously selected cell
+        if (gameState.selectedCell) {
+            gameState.selectedCell.classList.remove('selected');
+        }
+        
+        // Update selected cell
+        gameState.selectedCell = cell;
+        gameState.selectedCell.classList.add('selected');
         console.log(`Cell selected: Row ${row}, Col ${col}`);
     }
 
-    // --- Handle Keyboard Input ---
-    // (Modified slightly to use currentBoard for validation context)
-    document.addEventListener('keydown', (event) => {
-        if (!selectedCell || !selectedCell.classList.contains('editable')) return;
-
-        const key = event.key;
-        const row = parseInt(selectedCell.dataset.row);
-        const col = parseInt(selectedCell.dataset.col);
-
-        if (key >= '1' && key <= '9') {
-            const num = parseInt(key);
-            // Create a temporary board representing the *next* state for validation
-            let tempBoard = currentBoard.map(row => [...row]);
-            tempBoard[row][col] = num; // Place the number hypothetically
-
-             // Check validity based on the hypothetical placement
-            if (isValid(tempBoard, row, col, num)) {
-                currentBoard[row][col] = num; // Update the actual game state
-                selectedCell.textContent = num;
-                selectedCell.classList.remove('invalid');
-                messageArea.textContent = '';
-            } else {
-                // Visual feedback for invalid move
-                selectedCell.textContent = num; // Show invalid number briefly
-                selectedCell.classList.add('invalid');
-                messageArea.textContent = 'Invalid move!';
+    /**
+     * Show a message to the user
+     * @param {string} message - The message to show
+     * @param {string} type - The type of message ('info', 'success', 'error', 'warning')
+     */
+    function showMessage(message, type = 'info') {
+        messageArea.textContent = message;
+        
+        // Reset all styles
+        messageArea.style.color = '';
+        
+        // Apply appropriate style based on message type
+        switch (type) {
+            case 'success':
+                messageArea.style.color = 'green';
+                break;
+            case 'error':
                 messageArea.style.color = 'red';
-                // Reset visual feedback after delay
-                setTimeout(() => {
-                     if (selectedCell && selectedCell.classList.contains('invalid') && selectedCell.dataset.row == row && selectedCell.dataset.col == col) { // Ensure it's still the same cell
-                         selectedCell.classList.remove('invalid');
-                         // Restore text content based on the actual currentBoard state (which wasn't updated for the invalid move)
-                         selectedCell.textContent = currentBoard[row][col] === 0 ? '' : currentBoard[row][col];
-                         messageArea.textContent = '';
-                     }
-                }, 500);
-                console.log(`Invalid move: ${num} at (${row}, ${col})`);
-            }
-        } else if (key === 'Backspace' || key === 'Delete') {
-            currentBoard[row][col] = 0;
-            selectedCell.textContent = '';
-            selectedCell.classList.remove('invalid');
-            messageArea.textContent = '';
+                break;
+            case 'warning':
+                messageArea.style.color = 'orange';
+                break;
+            default:
+                // Default styling for 'info'
+                messageArea.style.color = 'blue';
         }
-    });
+    }
 
-
-    // --- Check Solution ---
-    // (Modified to check against rules, not just completion)
-    checkButton.addEventListener('click', () => {
+    /**
+     * Check if the current board state is valid according to Sudoku rules
+     * @returns {Object} - Object with isComplete and isCorrect properties
+     */
+    function checkBoardValidity() {
         let isComplete = true;
         let isCorrect = true;
 
-        for (let r = 0; r < 9; r++) {
-            for (let c = 0; c < 9; c++) {
-                const value = currentBoard[r][c];
+        // Check if board is complete and each placement is valid
+        for (let row = 0; row < BOARD_SIZE; row++) {
+            for (let col = 0; col < BOARD_SIZE; col++) {
+                const value = gameState.currentBoard[row][col];
+                
+                // Check if board is complete
                 if (value === 0) {
                     isComplete = false;
-                    break; // Incomplete
+                    break;
                 }
-                 // Check if the number placed violates any rules *in its current position*
-                 // Temporarily remove it to check validity against the rest of the board
-                 const originalValue = currentBoard[r][c];
-                 currentBoard[r][c] = 0; // Remove temporarily
-                 if (!isValid(currentBoard, r, c, originalValue)) {
+                
+                // Check if the number placed violates any rules
+                const originalValue = gameState.currentBoard[row][col];
+                gameState.currentBoard[row][col] = 0; // Remove temporarily
+                
+                if (!isValid(gameState.currentBoard, row, col, originalValue)) {
                     isCorrect = false;
-                 }
-                 currentBoard[r][c] = originalValue; // Put it back
-
-                if (!isCorrect) break; // Found an error
+                }
+                
+                gameState.currentBoard[row][col] = originalValue; // Put it back
+                
+                if (!isCorrect) break;
             }
-             if (!isComplete || !isCorrect) break;
+            
+            if (!isComplete || !isCorrect) break;
         }
 
-        if (!isComplete) {
-            messageArea.textContent = 'Board is not complete!';
-            messageArea.style.color = 'orange';
-        } else if (!isCorrect) {
-            messageArea.textContent = 'Something is wrong... Keep trying!';
-            messageArea.style.color = 'red';
-        } else {
-            messageArea.textContent = 'Congratulations! You solved it!';
-            messageArea.style.color = 'green';
-            if (selectedCell) selectedCell.classList.remove('selected');
-            selectedCell = null;
-            boardElement.querySelectorAll('.editable').forEach(cell => {
-                 cell.classList.remove('editable');
-                 cell.removeEventListener('click', handleCellClick); // Optional: remove listeners
-            });
+        return { isComplete, isCorrect };
+    }
+
+    // --- Event Handlers ---
+
+    /**
+     * Handle keyboard input for the selected cell
+     */
+    document.addEventListener('keydown', (event) => {
+        // Exit if no cell is selected, cell is not editable, or game is complete
+        if (!gameState.selectedCell || 
+            !gameState.selectedCell.classList.contains('editable') || 
+            gameState.gameComplete) {
+            return;
         }
-         console.log(`Check result: Complete=${isComplete}, Correct=${isCorrect}`);
+
+        const key = event.key;
+        const row = parseInt(gameState.selectedCell.dataset.row);
+        const col = parseInt(gameState.selectedCell.dataset.col);
+
+        if (key >= '1' && key <= '9') {
+            const num = parseInt(key);
+            
+            // Create a temporary board for validation
+            const tempBoard = gameState.currentBoard.map(row => [...row]);
+            tempBoard[row][col] = num;
+            
+            // Check if the move is valid
+            if (isValid(tempBoard, row, col, num)) {
+                // Update game state and UI
+                gameState.currentBoard[row][col] = num;
+                gameState.selectedCell.textContent = num;
+                gameState.selectedCell.classList.remove('invalid');
+                showMessage('', 'info'); // Clear any previous messages
+            } else {
+                // Show invalid move feedback
+                gameState.selectedCell.textContent = num;
+                gameState.selectedCell.classList.add('invalid');
+                showMessage('Invalid move!', 'error');
+                
+                // Reset visual feedback after delay
+                setTimeout(() => {
+                    // Check if it's still the same cell
+                    if (gameState.selectedCell && 
+                        gameState.selectedCell.classList.contains('invalid') && 
+                        gameState.selectedCell.dataset.row == row && 
+                        gameState.selectedCell.dataset.col == col) {
+                        
+                        gameState.selectedCell.classList.remove('invalid');
+                        // Restore text content based on current board state
+                        gameState.selectedCell.textContent = gameState.currentBoard[row][col] === 0 ? '' : gameState.currentBoard[row][col];
+                        showMessage('', 'info'); // Clear message
+                    }
+                }, 500);
+                
+                console.log(`Invalid move: ${num} at (${row}, ${col})`);
+            }
+        } else if (key === 'Backspace' || key === 'Delete') {
+            // Clear the cell
+            gameState.currentBoard[row][col] = 0;
+            gameState.selectedCell.textContent = '';
+            gameState.selectedCell.classList.remove('invalid');
+            showMessage('', 'info'); // Clear any previous messages
+        }
     });
 
+    /**
+     * Check if the current solution is correct
+     */
+    checkButton.addEventListener('click', () => {
+        const { isComplete, isCorrect } = checkBoardValidity();
 
-    // --- New Game Button ---
-    // Now calls initGame which includes generation
+        if (!isComplete) {
+            showMessage('Board is not complete!', 'warning');
+        } else if (!isCorrect) {
+            showMessage('Something is wrong... Keep trying!', 'error');
+        } else {
+            showMessage('Congratulations! You solved it!', 'success');
+            
+            // Mark game as complete
+            gameState.gameComplete = true;
+            
+            // Remove selection and event listeners
+            if (gameState.selectedCell) {
+                gameState.selectedCell.classList.remove('selected');
+            }
+            
+            gameState.selectedCell = null;
+            
+            // Make all cells non-editable
+            boardElement.querySelectorAll('.editable').forEach(cell => {
+                cell.classList.remove('editable');
+                // Remove click event listeners
+                const newCell = cell.cloneNode(true);
+                cell.parentNode.replaceChild(newCell, cell);
+            });
+        }
+        
+        console.log(`Check result: Complete=${isComplete}, Correct=${isCorrect}`);
+    });
+
+    /**
+     * Start a new game
+     */
     newGameButton.addEventListener('click', initGame);
 
-    // --- Initial Setup ---
-    initGame(); // Start the first game on load
+    // --- Initialize the first game on load ---
+    initGame();
 });
