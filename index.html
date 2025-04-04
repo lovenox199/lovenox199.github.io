@@ -9,11 +9,22 @@
 <body>
     <h1>Sudoku</h1>
     <div id="message-area"></div>
-    <div id="sudoku-board">
-        </div>
+
+    <!-- Difficulty Buttons -->
+    <div class="difficulty-container">
+        <button id="easy-button" class="difficulty-button">Easy</button>
+        <button id="medium-button" class="difficulty-button active">Medium</button>
+        <button id="hard-button" class="difficulty-button">Hard</button>
+    </div>
+
+    <!-- Sudoku Board -->
+    <div id="sudoku-board"></div>
+
+    <!-- Control Buttons -->
     <div class="controls">
         <button id="check-button">Check Solution</button>
         <button id="new-game-button">New Game</button>
+        <button id="hint-button">Hint</button>
     </div>
 
     <script src="script.js"></script>

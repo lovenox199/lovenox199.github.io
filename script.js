@@ -1,26 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
-    const boardElement = document.getElementById('sudoku-board');
-    const messageArea = document.getElementById('message-area');
-    const checkButton = document.getElementById('check-button');
-    const newGameButton = document.getElementById('new-game-button');
-    
-    // Create difficulty buttons
-    const difficultyContainer = document.createElement('div');
-    difficultyContainer.className = 'difficulty-container';
-    difficultyContainer.innerHTML = `
-        <button id="easy-button" class="difficulty-button">Easy</button>
-        <button id="medium-button" class="difficulty-button active">Medium</button>
-        <button id="hard-button" class="difficulty-button">Hard</button>
-    `;
-    
-    // Insert difficulty container before the board
-    boardElement.parentNode.insertBefore(difficultyContainer, boardElement);
-    
-    // Get difficulty buttons
-    const easyButton = document.getElementById('easy-button');
-    const mediumButton = document.getElementById('medium-button');
-    const hardButton = document.getElementById('hard-button');
+	const boardElement = document.getElementById('sudoku-board');
+	const messageArea = document.getElementById('message-area');
+	const checkButton = document.getElementById('check-button');
+	const newGameButton = document.getElementById('new-game-button');
+	const hintButton = document.getElementById('hint-button');
+	const easyButton = document.getElementById('easy-button');
+	const mediumButton = document.getElementById('medium-button');
+	const hardButton = document.getElementById('hard-button');
     
     // Constants
     const BOARD_SIZE = 9;
@@ -41,7 +28,21 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDifficulty: 'medium', // Keep track of active difficulty
         gameComplete: false
     };
+	
+	// Row, Column, and Sub-grid Highlighting
+	function highlightRelatedCells(row, col) {
+    document.querySelectorAll('.cell').forEach(cell => {
+        cell.classList.remove('highlight');
+        const cellRow = parseInt(cell.dataset.row);
+        const cellCol = parseInt(cell.dataset.col);
 
+        if (cellRow === row || cellCol === col ||
+            (Math.floor(cellRow / 3) === Math.floor(row / 3) && Math.floor(cellCol / 3) === Math.floor(col / 3))) {
+            cell.classList.add('highlight');
+        }
+    });
+}
+	
     /**
      * Fisher-Yates Shuffle for randomization
      * @param {Array} array - The array to shuffle
@@ -306,18 +307,16 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {number} row - Row index
      * @param {number} col - Column index
      */
-    function handleCellClick(cell, row, col) {
-        // Remove selection from previously selected cell
-        if (gameState.selectedCell) {
-            gameState.selectedCell.classList.remove('selected');
-        }
-        
-        // Update selected cell
-        gameState.selectedCell = cell;
-        gameState.selectedCell.classList.add('selected');
-        console.log(`Cell selected: Row ${row}, Col ${col}`);
-    }
+	function handleCellClick(cell, row, col) {
+		if (gameState.selectedCell) {
+			gameState.selectedCell.classList.remove('selected');
+		}
 
+		gameState.selectedCell = cell;
+		gameState.selectedCell.classList.add('selected');
+		highlightRelatedCells(row, col);
+	}
+	
     /**
      * Show a message to the user
      * @param {string} message - The message to show
@@ -446,8 +445,54 @@ document.addEventListener('DOMContentLoaded', () => {
             showMessage('', 'info'); // Clear any previous messages
         }
     });
+	
+	// Add a Hint button event listener
+	hintButton.addEventListener('click', () => {
+		if (gameState.gameComplete) {
+			showMessage('Game already complete! Start a new game.', 'warning');
+			return;
+		}
 
-    /**
+		// Find all empty cells
+		const emptyCells = [];
+		for (let row = 0; row < BOARD_SIZE; row++) {
+			for (let col = 0; col < BOARD_SIZE; col++) {
+				if (gameState.currentBoard[row][col] === 0) {
+					emptyCells.push({ row, col });
+				}
+			}
+		}
+
+		// Check if there are no empty cells
+		if (emptyCells.length === 0) {
+			showMessage('No hints available—board is complete!', 'info');
+			return;
+		}
+
+		// Randomly select one empty cell to provide as a hint
+		const randomIndex = Math.floor(Math.random() * emptyCells.length);
+		const hintCell = emptyCells[randomIndex];
+		const correctNumber = gameState.solutionBoard[hintCell.row][hintCell.col];
+
+		// Update the game state with the hint
+		gameState.currentBoard[hintCell.row][hintCell.col] = correctNumber;
+
+		// Re-render the board and highlight the hinted cell
+		renderBoard();
+
+		const hintedCellElement = boardElement.querySelector(`.cell[data-row='${hintCell.row}'][data-col='${hintCell.col}']`);
+		hintedCellElement.classList.add('hinted');
+
+		// Show a helpful message to the user
+		showMessage(`Hint: Cell at (${hintCell.row + 1}, ${hintCell.col + 1}) set to ${correctNumber}`, 'info');
+
+		// Remove hint highlighting after a short duration
+		setTimeout(() => {
+			hintedCellElement.classList.remove('hinted');
+		}, 2000);
+	});
+	
+	/**
      * Check if the current solution is correct
      */
     checkButton.addEventListener('click', () => {
@@ -469,7 +514,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             gameState.selectedCell = null;
-            
+
             // Make all cells non-editable
             boardElement.querySelectorAll('.editable').forEach(cell => {
                 cell.classList.remove('editable');
@@ -508,35 +553,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setDifficulty('hard');
     });
 
-    // Add some basic CSS for the difficulty buttons
-    const style = document.createElement('style');
-    style.textContent = `
-        .difficulty-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 15px;
-        }
-        
-        .difficulty-button {
-            padding: 8px 16px;
-            margin: 0 5px;
-            border: 1px solid #ccc;
-            background-color: #f5f5f5;
-            cursor: pointer;
-            border-radius: 4px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-        
-        .difficulty-button:hover {
-            background-color: #e0e0e0;
-        }
-        
-        .difficulty-button.active {
-            background-color: #4CAF50;
-            color: white;
-            border-color: #4CAF50;
-        }
     `;
     document.head.appendChild(style);
 

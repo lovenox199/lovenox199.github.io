@@ -116,3 +116,40 @@ h1 {
     max-font-size: 16px; /* Limit max font size */
     cursor: pointer;
 }
+
+.cell.highlight {
+    background-color: #d3e4ff;
+}
+
+/* Difficulty buttons */
+.difficulty-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.difficulty-button {
+    padding: 8px 16px;
+    margin: 0 5px;
+    border: 1px solid #ccc;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.difficulty-button:hover {
+    background-color: #e0e0e0;
+}
+
+.difficulty-button.active {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+}
+
+/* Highlighting related cells */
+.cell.highlight {
+    background-color: #d3e4ff;
+}
