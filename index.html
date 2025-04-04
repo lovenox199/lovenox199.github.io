@@ -10,46 +10,49 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
+<body class="flex flex-col items-center justify-center min-h-screen p-2 sm:p-4 bg-gray-100">
 
-    <div class="flex flex-col items-center flex-grow">
+    <div class="flex flex-col items-center flex-grow w-full">
 
-        <h1 class="text-3xl font-bold mb-4 text-gray-800">Sudoku</h1> <div class="flex items-baseline justify-center space-x-4 mb-4">
-             <div class="text-lg font-medium">
-                 <span id="difficulty-display" class="font-semibold px-2 py-0.5 rounded">Normal</span> </div>
-             <div id="timer" class="text-2xl font-semibold text-gray-700">
+        <h1 class="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-gray-800">Sudoku</h1>
+
+        <div class="flex items-baseline justify-center space-x-3 sm:space-x-4 mb-3 sm:mb-4">
+             <div class="text-base sm:text-lg font-medium">
+                 <span id="difficulty-display" class="font-semibold px-2 py-0.5 rounded">Normal</span>
+             </div>
+             <div id="timer" class="text-xl sm:text-2xl font-semibold text-gray-700">
                 00:00
             </div>
         </div>
 
         <div id="difficulty-selector" class="mb-4 flex flex-wrap justify-center items-center gap-2">
-            <button data-difficulty="easy" class="difficulty-btn px-4 py-2 bg-[#A7F3D0] hover:bg-[#6EE7B7] text-gray-800 rounded-md shadow transition duration-200">Easy</button>
-            <button data-difficulty="normal" class="difficulty-btn px-4 py-2 bg-[#FEF08A] hover:bg-[#FDE68A] text-gray-800 rounded-md shadow transition duration-200">Normal</button>
-            <button data-difficulty="hard" class="difficulty-btn px-4 py-2 bg-[#FECACA] hover:bg-[#FCA5A5] text-gray-800 rounded-md shadow transition duration-200">Hard</button>
+            <button data-difficulty="easy" class="difficulty-btn px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-[#A7F3D0] hover:bg-[#6EE7B7] text-gray-800 rounded-md shadow transition duration-200">Easy</button>
+            <button data-difficulty="normal" class="difficulty-btn px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-[#FEF08A] hover:bg-[#FDE68A] text-gray-800 rounded-md shadow transition duration-200">Normal</button>
+            <button data-difficulty="hard" class="difficulty-btn px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-[#FECACA] hover:bg-[#FCA5A5] text-gray-800 rounded-md shadow transition duration-200">Hard</button>
         </div>
 
-        <div id="sudoku-board-container" class="w-full max-w-md aspect-square mb-6 shadow-lg rounded-[0.6rem] overflow-hidden border-2 border-solid border-black">
+        <div id="sudoku-board-container" class="w-[90vw] max-w-md aspect-square mb-4 sm:mb-6 shadow-lg rounded-[0.6rem] overflow-hidden border-2 border-solid border-black">
              </div>
 
-        <div id="number-palette" class="flex space-x-1 mb-4">
-            <button data-number="1" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">1</button>
-            <button data-number="2" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">2</button>
-            <button data-number="3" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">3</button>
-            <button data-number="4" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">4</button>
-            <button data-number="5" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">5</button>
-            <button data-number="6" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">6</button>
-            <button data-number="7" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">7</button>
-            <button data-number="8" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">8</button>
-            <button data-number="9" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">9</button>
-            <button id="erase-button" class="number-button w-10 h-10 bg-gray-400 text-white rounded-md shadow hover:bg-gray-500 text-lg font-semibold">X</button>
+        <div id="number-palette" class="flex flex-wrap justify-center gap-1 mb-4 px-1">
+            <button data-number="1" class="number-button w-8 h-8 sm:w-10 sm:h-10 bg-[#A0CED9] hover:bg-[#87B6C4] text-white rounded-md shadow transition duration-200 text-base sm:text-lg font-semibold flex items-center justify-center">1</button>
+            <button data-number="2" class="number-button w-8 h-8 sm:w-10 sm:h-10 bg-[#A0CED9] hover:bg-[#87B6C4] text-white rounded-md shadow transition duration-200 text-base sm:text-lg font-semibold flex items-center justify-center">2</button>
+            <button data-number="3" class="number-button w-8 h-8 sm:w-10 sm:h-10 bg-[#A0CED9] hover:bg-[#87B6C4] text-white rounded-md shadow transition duration-200 text-base sm:text-lg font-semibold flex items-center justify-center">3</button>
+            <button data-number="4" class="number-button w-8 h-8 sm:w-10 sm:h-10 bg-[#A0CED9] hover:bg-[#87B6C4] text-white rounded-md shadow transition duration-200 text-base sm:text-lg font-semibold flex items-center justify-center">4</button>
+            <button data-number="5" class="number-button w-8 h-8 sm:w-10 sm:h-10 bg-[#A0CED9] hover:bg-[#87B6C4] text-white rounded-md shadow transition duration-200 text-base sm:text-lg font-semibold flex items-center justify-center">5</button>
+            <button data-number="6" class="number-button w-8 h-8 sm:w-10 sm:h-10 bg-[#A0CED9] hover:bg-[#87B6C4] text-white rounded-md shadow transition duration-200 text-base sm:text-lg font-semibold flex items-center justify-center">6</button>
+            <button data-number="7" class="number-button w-8 h-8 sm:w-10 sm:h-10 bg-[#A0CED9] hover:bg-[#87B6C4] text-white rounded-md shadow transition duration-200 text-base sm:text-lg font-semibold flex items-center justify-center">7</button>
+            <button data-number="8" class="number-button w-8 h-8 sm:w-10 sm:h-10 bg-[#A0CED9] hover:bg-[#87B6C4] text-white rounded-md shadow transition duration-200 text-base sm:text-lg font-semibold flex items-center justify-center">8</button>
+            <button data-number="9" class="number-button w-8 h-8 sm:w-10 sm:h-10 bg-[#A0CED9] hover:bg-[#87B6C4] text-white rounded-md shadow transition duration-200 text-base sm:text-lg font-semibold flex items-center justify-center">9</button>
+            <button id="erase-button" class="number-button w-8 h-8 sm:w-10 sm:h-10 bg-gray-400 text-white rounded-md shadow hover:bg-gray-500 text-base sm:text-lg font-semibold flex items-center justify-center">X</button>
         </div>
 
-         <div class="flex space-x-4">
-            <button id="undo-button" title="Undo Last Move" class="p-2.5 bg-gray-300 text-gray-800 rounded-md shadow hover:bg-gray-400 transition duration-200 flex items-center justify-center">
-                <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/undo-2.svg" alt="Undo" class="w-5 h-5"/>
+         <div class="flex flex-wrap justify-center gap-4">
+            <button id="undo-button" title="Undo Last Move" class="p-2 sm:p-2.5 bg-gray-300 text-gray-800 rounded-md shadow hover:bg-gray-400 transition duration-200 flex items-center justify-center">
+                <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/undo-2.svg" alt="Undo" class="w-4 h-4 sm:w-5 sm:h-5"/>
             </button>
-            <button id="hint-button" title="Get a Hint (3 left)" class="relative p-2.5 bg-[#FFFFB8] text-black rounded-full shadow hover:bg-[#F8F8A0] transition duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
-                <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/lightbulb.svg" alt="Hint" class="w-5 h-5"/>
+            <button id="hint-button" title="Get a Hint (3 left)" class="relative p-2 sm:p-2.5 bg-[#FFFFB8] text-black rounded-full shadow hover:bg-[#F8F8A0] transition duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/lightbulb.svg" alt="Hint" class="w-4 h-4 sm:w-5 sm:h-5"/>
                 <span id="hint-count" class="absolute -top-1 -right-1 bg-[#FFD6E0] text-black text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
                     3 </span>
             </button>

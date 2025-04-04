@@ -33,8 +33,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    /* --- MODIFIED: Changed font scaling unit to vw --- */
-    font-size: clamp(0.7rem, 3.5vw, 1.5rem); /* Min size, Preferred (scales with width), Max size */
+    /* --- MODIFIED: Slightly adjusted vw scaling factor --- */
+    font-size: clamp(0.7rem, 3.2vw, 1.5rem); /* Min size, Preferred (scales with width), Max size */
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
