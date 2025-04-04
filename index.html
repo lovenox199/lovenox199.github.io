@@ -4,29 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sudoku Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <h1>Sudoku</h1>
-    <div id="message-area"></div>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
 
-    <!-- Difficulty Buttons -->
-    <div class="difficulty-container">
-        <button id="easy-button" class="difficulty-button">Easy</button>
-        <button id="medium-button" class="difficulty-button active">Medium</button>
-        <button id="hard-button" class="difficulty-button">Hard</button>
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Sudoku</h1>
+
+    <div id="difficulty-selector" class="mb-4 flex space-x-2">
+        <button data-difficulty="easy" class="difficulty-btn px-4 py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 transition duration-200">Easy</button>
+        <button data-difficulty="normal" class="difficulty-btn px-4 py-2 bg-yellow-500 text-white rounded-md shadow hover:bg-yellow-600 transition duration-200">Normal</button>
+        <button data-difficulty="hard" class="difficulty-btn px-4 py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition duration-200">Hard</button>
     </div>
 
-    <!-- Sudoku Board -->
-    <div id="sudoku-board"></div>
-
-    <!-- Control Buttons -->
-    <div class="controls">
-        <button id="check-button">Check Solution</button>
-        <button id="new-game-button">New Game</button>
-        <button id="hint-button">Hint</button>
+    <div class="w-full max-w-md aspect-square mb-6 shadow-lg rounded-lg overflow-hidden">
+         <div id="sudoku-grid" class="grid grid-cols-9 grid-rows-9 w-full h-full">
+             </div>
     </div>
 
-    <script src="script.js"></script>
+    <div id="number-palette" class="flex space-x-1 mb-4">
+        <button data-number="1" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">1</button>
+        <button data-number="2" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">2</button>
+        <button data-number="3" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">3</button>
+        <button data-number="4" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">4</button>
+        <button data-number="5" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">5</button>
+        <button data-number="6" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">6</button>
+        <button data-number="7" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">7</button>
+        <button data-number="8" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">8</button>
+        <button data-number="9" class="number-button w-10 h-10 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 text-lg font-semibold">9</button>
+        <button id="erase-button" class="number-button w-10 h-10 bg-gray-400 text-white rounded-md shadow hover:bg-gray-500 text-lg font-semibold">X</button>
+    </div>
+
+     <button id="new-game-btn" class="px-5 py-2 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition duration-200">New Game</button>
+
+    <div id="message-area" class="mt-4 text-lg font-medium text-gray-700"></div>
+
+    <div id="message-box">
+        <p id="message-box-text"></p>
+        <button id="message-box-close">OK</button>
+    </div>
+
+    <script src="script.js" defer></script>
+
 </body>
 </html>
