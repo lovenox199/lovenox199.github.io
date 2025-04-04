@@ -11,12 +11,21 @@ const timerElement = document.getElementById('timer');
 const undoButton = document.getElementById('undo-button');
 const hintButton = document.getElementById('hint-button');
 const hintCountElement = document.getElementById('hint-count');
+const difficultyDisplayElement = document.getElementById('difficulty-display');
 
 // --- Game Constants and State ---
 const N = 9;
 const SQRT_N = 3;
 const K_MAP = { easy: 45, normal: 35, hard: 25 };
 const MAX_HINTS = 3;
+// *** NEW: Color mapping for difficulty text ***
+const DIFFICULTY_TEXT_COLORS = {
+    easy: 'text-green-400', // Darker green for readability
+    normal: 'text-yellow-400', // Darker yellow
+    hard: 'text-red-400' // Darker red
+};
+// Store previous color class to remove it easily
+let currentDifficultyColorClass = DIFFICULTY_TEXT_COLORS.normal; // Default
 
 let currentBoard = [];
 let solutionBoard = [];
@@ -51,13 +60,7 @@ function handleUndo() {
     console.log("Undoing move:", lastMove);
     const tile = tileElements[lastMove.index];
     if (tile && currentBoard[lastMove.row]) {
-
-        // *** REMOVED: Logic that refunded hint count ***
-        // if (lastMove.isHint) {
-        //     hintsRemaining++;
-        //     updateHintButtonDisplay(); // Update display after undoing hint
-        // }
-
+        // Undo does NOT refund hints
         currentBoard[lastMove.row][lastMove.col] = lastMove.prevValue;
         const span = tile.querySelector('span');
         if (span) span.textContent = lastMove.prevValue === 0 ? '' : lastMove.prevValue;
@@ -122,8 +125,23 @@ function validateAndHighlightErrors() { /* ... unchanged ... */
  }
 
 // --- Game Flow Functions ---
+// *** MODIFIED: Function to update difficulty display ***
+function updateDifficultyDisplay() {
+    if (!difficultyDisplayElement) return;
+    // Capitalize the first letter
+    const difficultyText = currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1);
+    difficultyDisplayElement.textContent = difficultyText;
+
+    // *** NEW: Apply color based on difficulty ***
+    // Remove previous color class
+    difficultyDisplayElement.classList.remove(...Object.values(DIFFICULTY_TEXT_COLORS));
+    // Add new color class
+    const colorClass = DIFFICULTY_TEXT_COLORS[currentDifficulty] || 'text-gray-800'; // Fallback
+    difficultyDisplayElement.classList.add(colorClass);
+}
+
 function startNewGame(difficulty) { /* ... unchanged ... */
-    if (messageArea) { messageArea.textContent = `Generating ${difficulty} puzzle... Please wait.`; messageArea.style.color = ''; } currentDifficulty = difficulty; selectedTile = null; stopTimer(); moveHistory = []; console.log("Move history cleared."); hintsRemaining = MAX_HINTS; updateHintButtonDisplay(); clearSelectionAndHighlight(); setTimeout(() => { try { console.log("Attempting to generate puzzle..."); const generator = new SudokuGenerator(N); const generatedData = generator.generate(difficulty); if (!generatedData || !generatedData.puzzle || !generatedData.solution) throw new Error("Puzzle generation failed."); console.log("Puzzle generated."); currentBoard = generatedData.puzzle.map(row => [...row]); solutionBoard = generatedData.solution; createGrid(); if (tileElements.length === N * N) { console.log("Grid created. Populating grid..."); populateGrid(currentBoard); console.log("Grid populated. Game ready."); if (messageArea) messageArea.textContent = `New ${difficulty} game started! Select a tile.`; startTimer(); } else { throw new Error("Grid creation failed."); } } catch (error) { console.error("Error starting new game:", error); if (messageArea) { messageArea.textContent = `Error starting game: ${error.message}. Please try refreshing.`; messageArea.style.color = 'red'; } if (boardContainer) boardContainer.innerHTML = '<p class="text-red-600 p-4 text-center">Failed to load game board.<br>Please try refreshing the page.</p>'; } }, 50);
+    if (messageArea) { messageArea.textContent = `Generating ${difficulty} puzzle... Please wait.`; messageArea.style.color = ''; } currentDifficulty = difficulty; selectedTile = null; stopTimer(); moveHistory = []; console.log("Move history cleared."); hintsRemaining = MAX_HINTS; updateHintButtonDisplay(); updateDifficultyDisplay(); clearSelectionAndHighlight(); setTimeout(() => { try { console.log("Attempting to generate puzzle..."); const generator = new SudokuGenerator(N); const generatedData = generator.generate(difficulty); if (!generatedData || !generatedData.puzzle || !generatedData.solution) throw new Error("Puzzle generation failed."); console.log("Puzzle generated."); currentBoard = generatedData.puzzle.map(row => [...row]); solutionBoard = generatedData.solution; createGrid(); if (tileElements.length === N * N) { console.log("Grid created. Populating grid..."); populateGrid(currentBoard); console.log("Grid populated. Game ready."); if (messageArea) messageArea.textContent = `New ${difficulty} game started! Select a tile.`; startTimer(); } else { throw new Error("Grid creation failed."); } } catch (error) { console.error("Error starting new game:", error); if (messageArea) { messageArea.textContent = `Error starting game: ${error.message}. Please try refreshing.`; messageArea.style.color = 'red'; } if (boardContainer) boardContainer.innerHTML = '<p class="text-red-600 p-4 text-center">Failed to load game board.<br>Please try refreshing the page.</p>'; } }, 50);
  }
 
  function showWinMessage() { /* ... unchanged ... */
@@ -157,11 +175,12 @@ document.addEventListener('keydown', (e) => { /* ... unchanged ... */
 
 // --- Initialisation ---
 document.addEventListener('DOMContentLoaded', () => { /* ... unchanged ... */
-     if (!boardContainer || !messageArea || !timerElement || !undoButton || !hintButton || !hintCountElement) { // Check hint button too
+     if (!boardContainer || !messageArea || !timerElement || !undoButton || !hintButton || !hintCountElement || !difficultyDisplayElement) { // Check difficulty display too
          console.error("Essential DOM elements not found. Cannot start game.");
          // Error display as before...
          return;
      }
      console.log("DOM fully loaded. Starting initial game.");
      startNewGame(currentDifficulty);
+     updateDifficultyDisplay(); // Set initial display
 });
