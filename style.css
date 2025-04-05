@@ -62,16 +62,16 @@ body {
 
 /* --- Round the outer corners of the corner SECTIONS --- */
 #sudoku-board > .sudoku-section:nth-child(1) { /* Top-left section */
-    border-top-left-radius: 0.6rem;
+    border-top-left-radius: 0.65rem;
 }
 #sudoku-board > .sudoku-section:nth-child(3) { /* Top-right section */
-    border-top-right-radius: 0.6rem;
+    border-top-right-radius: 0.65rem;
 }
 #sudoku-board > .sudoku-section:nth-child(7) { /* Bottom-left section */
-    border-bottom-left-radius: 0.6rem;
+    border-bottom-left-radius: 0.65rem;
 }
 #sudoku-board > .sudoku-section:nth-child(9) { /* Bottom-right section */
-    border-bottom-right-radius: 0.6rem;
+    border-bottom-right-radius: 0.65rem;
 }
 
 
