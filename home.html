@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lovenox199 | Digital Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        :root {
+            --bg-gradient: radial-gradient(circle at top left, #f8fafc, #f1f5f9);
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        body.dark {
+            --bg-gradient: radial-gradient(circle at top left, #0f172a, #020617);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            background-color: #020617;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            border-color: #3b82f6;
+        }
+
+        .icon-container {
+            transition: transform 0.3s ease;
+        }
+
+        .glass-card:hover .icon-container {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            color: var(--text-main);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: #3b82f6;
+            border-radius: 2px;
+        }
+
+        /* Fun Event Styles */
+        .fun-emoji {
+            position: fixed;
+            bottom: -50px;
+            font-size: 2rem;
+            pointer-events: none;
+            z-index: 100;
+            animation: float-up var(--duration) ease-in infinite;
+        }
+
+        @keyframes float-up {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Dark Mode Specific Adjustments */
+        .dark .text-slate-800 { color: #f1f5f9; }
+        .dark .text-slate-600 { color: #cbd5e1; }
+        .dark .text-slate-500 { color: #94a3b8; }
+        .dark nav { border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .dark footer { background: #0f172a; border-top: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body class="flex flex-col">
+
+    <!-- Navigation -->
+    <nav class="w-full py-8 px-8 flex justify-between items-center max-w-7xl mx-auto">
+        <div class="flex items-center gap-2">
+            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
+                <i data-lucide="layout-grid"></i>
+            </div>
+            <span class="text-xl font-bold tracking-tight">Lovenox199</span>
+        </div>
+        <div class="flex items-center gap-3 sm:gap-6">
+            <a href="https://github.com/Lovenox199" target="_blank" class="hidden md:block text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors font-medium">My GitHub</a>
+            
+            <div class="flex items-center gap-2">
+                <button id="fun-toggle" class="p-2.5 rounded-xl bg-white/10 border border-slate-200 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group" title="Surprise Me">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform"></i>
+                </button>
+
+                <button id="theme-toggle" class="p-2.5 rounded-xl bg-white/10 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all" title="Toggle Theme">
+                    <i id="theme-icon" data-lucide="moon" class="w-5 h-5 text-slate-600 dark:text-yellow-400"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow px-6 py-8 max-w-7xl mx-auto w-full">
+        
+        <!-- Games Section -->
+        <section class="mb-16">
+            <div class="flex items-center gap-3 mb-8">
+                <i data-lucide="gamepad-2" class="text-blue-600"></i>
+                <h2 class="text-2xl font-bold section-title">Games</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Card: Watermelon Game -->
+                <a href="https://lovenox199.github.io/watermelon_game/" target="_blank" class="glass-card p-8 rounded-3xl flex items-center gap-6 group">
+                    <div class="icon-container shrink-0 w-16 h-16 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 rounded-2xl flex items-center justify-center">
+                        <i data-lucide="apple" size="32"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-1">Watermelon</h3>
+                        <p class="text-sm text-slate-500">Strategic fruit puzzle: combine numbered slices to sum 10, similar to the Apple Game.</p>
+                    </div>
+                    <div class="ml-auto text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i data-lucide="chevron-right"></i>
+                    </div>
+                </a>
+
+                <!-- Card: Sudoku -->
+                <a href="https://lovenox199.github.io/sudoku_lovenox/" target="_blank" class="glass-card p-8 rounded-3xl flex items-center gap-6 group">
+                    <div class="icon-container shrink-0 w-16 h-16 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 rounded-2xl flex items-center justify-center">
+                        <i data-lucide="grid-3x3" size="32"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-1">Sudoku</h3>
+                        <p class="text-sm text-slate-500">Classic logic-based number placement.</p>
+                    </div>
+                    <div class="ml-auto text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i data-lucide="chevron-right"></i>
+                    </div>
+                </a>
+
+                <!-- Card: Minesweeper -->
+                <a href="https://lovenox199.github.io/minesweeper/" target="_blank" class="glass-card p-8 rounded-3xl flex items-center gap-6 group">
+                    <div class="icon-container shrink-0 w-16 h-16 bg-orange-50 dark:bg-orange-900/30 text-orange-600 rounded-2xl flex items-center justify-center">
+                        <i data-lucide="bomb" size="32"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-1">Minesweeper</h3>
+                        <p class="text-sm text-slate-500">Clear the board without hitting a mine.</p>
+                    </div>
+                    <div class="ml-auto text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i data-lucide="chevron-right"></i>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- Lectures Section -->
+        <section>
+            <div class="flex items-center gap-3 mb-8">
+                <i data-lucide="book-open" class="text-blue-600"></i>
+                <h2 class="text-2xl font-bold section-title">Lectures</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                
+                <!-- Card: CAT -->
+                <a href="https://lovenox199.github.io/Management-of-Cancer-Associated-Thrombosis/" target="_blank" class="glass-card p-8 rounded-3xl flex items-center gap-6 group">
+                    <div class="icon-container shrink-0 w-16 h-16 bg-rose-50 dark:bg-rose-900/30 text-rose-600 rounded-2xl flex items-center justify-center">
+                        <i data-lucide="stethoscope" size="32"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-1">Cancer Associated Thrombosis</h3>
+                        <p class="text-sm text-slate-500">Clinical guidelines and management resources.</p>
+                    </div>
+                    <div class="ml-auto text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i data-lucide="chevron-right"></i>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-slate-200 mt-12 bg-white">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <p class="text-slate-500 text-sm">© 2026 Lovenox199. All rights reserved.</p>
+            <div class="flex gap-6">
+                <a href="https://github.com/Lovenox199" class="text-slate-400 hover:text-slate-600 transition-colors"><i data-lucide="github" size="20"></i></a>
+                <a href="#" class="text-slate-400 hover:text-slate-600 transition-colors"><i data-lucide="twitter" size="20"></i></a>
+                <a href="#" class="text-slate-400 hover:text-slate-600 transition-colors"><i data-lucide="mail" size="20"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        const themeIcon = document.getElementById('theme-icon');
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            const isDark = body.classList.contains('dark');
+            themeIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            lucide.createIcons();
+        });
+
+        // Fun Event Logic: Emoji Party
+        const funToggle = document.getElementById('fun-toggle');
+        const emojis = ['🍉', '🧩', '💣', '🩺', '✨', '🔥', '🚀'];
+
+        funToggle.addEventListener('click', () => {
+            for(let i = 0; i < 20; i++) {
+                createEmoji();
+            }
+        });
+
+        function createEmoji() {
+            const emoji = document.createElement('div');
+            emoji.classList.add('fun-emoji');
+            emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            emoji.style.left = Math.random() * 100 + 'vw';
+            emoji.style.setProperty('--duration', (Math.random() * 2 + 2) + 's');
+            
+            document.body.appendChild(emoji);
+
+            // Remove emoji after animation ends
+            setTimeout(() => {
+                emoji.remove();
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
