@@ -176,7 +176,7 @@
         </section>
 
         <!-- Lectures Section -->
-        <section>
+        <section class="mb-16">
             <div class="flex items-center gap-3 mb-8">
                 <i data-lucide="book-open" class="text-blue-600"></i>
                 <h2 class="text-2xl font-bold section-title">Lectures</h2>
@@ -197,7 +197,7 @@
                     </div>
                 </a>
 
-                <!-- Card: Refugee Access Barriers (New) -->
+                <!-- Card: Refugee Access Barriers -->
                 <a href="https://lovenox199.github.io/Barriers-to-Access-for-Refugees-and-Asylum-Seekers-in-High-Income-Countries/" target="_blank" class="glass-card p-8 rounded-3xl flex items-center gap-6 group">
                     <div class="icon-container shrink-0 w-16 h-16 bg-teal-50 dark:bg-teal-900/30 text-teal-600 rounded-2xl flex items-center justify-center">
                         <i data-lucide="globe-2" size="32"></i>
@@ -205,6 +205,31 @@
                     <div>
                         <h3 class="text-xl font-bold text-slate-800 mb-1">Refugee Access Barriers</h3>
                         <p class="text-sm text-slate-500">Disparities for refugees and asylum seekers in high-income nations.</p>
+                    </div>
+                    <div class="ml-auto text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i data-lucide="chevron-right"></i>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- Quizzes Section -->
+        <section>
+            <div class="flex items-center gap-3 mb-8">
+                <i data-lucide="clipboard-check" class="text-blue-600"></i>
+                <h2 class="text-2xl font-bold section-title">Quizzes</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Card: ABFM Quiz -->
+                <a href="https://lovenox199.github.io/ABFM-21-40/" target="_blank" class="glass-card p-8 rounded-3xl flex items-center gap-6 group">
+                    <div class="icon-container shrink-0 w-16 h-16 bg-amber-50 dark:bg-amber-900/30 text-amber-600 rounded-2xl flex items-center justify-center">
+                        <i data-lucide="list-checks" size="32"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-1">ABFM 21-40</h3>
+                        <p class="text-sm text-slate-500">Medical board exam practice questions and knowledge review.</p>
                     </div>
                     <div class="ml-auto text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
                         <i data-lucide="chevron-right"></i>
@@ -245,7 +270,7 @@
 
         // Fun Event Logic: Emoji Party
         const funToggle = document.getElementById('fun-toggle');
-        const emojis = ['🍉', '🧩', '💣', '🩺', '🌍', '✨', '🚀'];
+        const emojis = ['🍉', '🧩', '💣', '🩺', '🌍', '📝', '✨', '🚀'];
 
         funToggle.addEventListener('click', () => {
             for(let i = 0; i < 20; i++) {
